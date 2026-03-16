@@ -1,0 +1,7 @@
+docker run -d \
+--name postgres-ai-tool \
+-e POSTGRES_DB=ai_tool \
+-e POSTGRES_USER=postgres \
+-e POSTGRES_PASSWORD=Asdfgf@2002 \
+-p 5432:5432 \
+postgres

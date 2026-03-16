@@ -1,0 +1,63 @@
+version: "3.9"
+
+services:
+
+  db:
+    image: postgres:17
+    container_name: postgres_db
+    restart: always
+    environment:
+      POSTGRES_DB: ai_tool
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Asdfgf@2002
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data
+    networks:
+      - cloud-sec-network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: django_backend
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+      - ollama
+    environment:
+      DB_NAME: ai_tool
+      DB_USER: postgres
+      DB_PASSWORD: Asdfgf@2002
+      DB_HOST: db
+      DB_PORT: 5432
+      OLLAMA_BASE_URL: http://ollama:11434
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - cloud-sec-network
+
+  ollama:
+    image: e400c209a686
+    container_name: ollama
+    ports:
+      - "11434:11434"
+    networks:
+      - cloud-sec-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: react_frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - cloud-sec-network
+
+networks:
+  cloud-sec-network:
